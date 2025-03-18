@@ -33,11 +33,67 @@
             transform: translateY(0);
             opacity: 1;
         }
+        /* Improved responsive table styles */
+        @media (max-width: 768px) {
+            .responsive-table {
+                display: block;
+                width: 100%;
+            }
+            .responsive-table thead {
+                display: none;
+            }
+            .responsive-table tbody, .responsive-table tfoot {
+                display: block;
+                width: 100%;
+            }
+            .responsive-table tr {
+                display: flex;
+                flex-wrap: wrap;
+                margin-bottom: 15px;
+                border: 1px solid #f9a8d4;
+                border-radius: 8px;
+                padding: 10px;
+                position: relative;
+            }
+            .responsive-table td {
+                flex: 1 1 100%;
+                border: none !important;
+                padding: 8px !important;
+                text-align: left !important;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .responsive-table td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #6b7280;
+                margin-right: 8px;
+            }
+            .responsive-table td:last-child {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: auto;
+                padding: 0 !important;
+                border: none;
+                background: none;
+            }
+            .responsive-table tfoot tr {
+                justify-content: flex-end;
+                border: none;
+                margin-top: 15px;
+            }
+            /* Hide data labels for certain cells */
+            .responsive-table td.no-label::before {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body class="bg-pink-50 min-h-screen flex flex-col">
-    <!-- Navbar -->
-    <nav class="bg-white shadow-md sticky top-0 z-50">
+    <!-- Fixed Navbar -->
+    <nav class="bg-white shadow-md fixed top-0 w-full z-50">
         <div class="container mx-auto px-4 py-3">
             <div class="flex justify-between items-center">
                 <div class="flex items-center">
@@ -59,7 +115,7 @@
     </nav>
     
     <!-- Mini Cart Dropdown -->
-    <div id="mini-cart" class="hidden absolute right-4 mt-2 z-50 bg-white rounded-lg shadow-lg w-80 border border-pink-100" style="top: 60px; right: 20px;">
+    <div id="mini-cart" class="hidden fixed right-4 mt-2 z-50 bg-white rounded-lg shadow-lg w-80 border border-pink-100" style="top: 60px; right: 20px;">
         <div class="p-4">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="font-bold text-gray-800">Keranjang Belanja</h3>
@@ -93,8 +149,67 @@
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="container mx-auto px-4 py-8 flex-grow">
+    <!-- Hero Section -->
+<div class="bg-gradient-to-r from-pink-400 to-pink-600 mt-16">
+    <div class="container mx-auto px-4 py-12 md:py-20">
+        <div class="flex flex-col md:flex-row items-center">
+            <!-- Hero Content -->
+            <div class="md:w-1/2 text-white mb-8 md:mb-0">
+                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Keindahan Bunga Segar dari Bali</h1>
+                <p class="text-lg mb-6 text-pink-100">Koleksi bunga segar kami hadir untuk mempercantik momen spesial dalam hidup Anda.</p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#product-container" class="bg-white text-pink-600 hover:bg-pink-100 transition-colors duration-300 font-medium py-3 px-6 rounded-lg shadow-md flex items-center justify-center">
+                        <i class="fas fa-shopping-bag mr-2"></i> Belanja Sekarang
+                    </a>
+                    <a href="#" class="bg-transparent hover:bg-pink-700 border-2 border-white text-white transition-colors duration-300 font-medium py-3 px-6 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-info-circle mr-2"></i> Tentang Kami
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Hero Image -->
+            <div class="md:w-1/2 flex justify-center">
+                <div class="bg-white p-4 rounded-lg shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                    <img src="img/hero-bouquet.jpg" alt="Bunga Toko Sekar" class="rounded-lg h-64 w-80 object-cover" 
+                         onerror="this.onerror=null; this.src='img/Mawar.JPG';">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12 text-white">
+            <div class="flex items-start p-4 bg-white bg-opacity-20 rounded-lg backdrop-filter backdrop-blur-sm">
+                <div class="bg-white p-3 rounded-full mr-4">
+                    <i class="fas fa-truck-loading text-pink-600 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-1">Pengiriman Cepat</h3>
+                    <p class="text-pink-100 text-sm">Pesanan sampai dalam waktu 1-2 jam di area Denpasar</p>
+                </div>
+            </div>
+            <div class="flex items-start p-4 bg-white bg-opacity-20 rounded-lg backdrop-filter backdrop-blur-sm">
+                <div class="bg-white p-3 rounded-full mr-4">
+                    <i class="fas fa-seedling text-pink-600 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-1">Bunga Segar</h3>
+                    <p class="text-pink-100 text-sm">Hanya bunga berkualitas terbaik yang dipetik langsung dari kebun</p>
+                </div>
+            </div>
+            <div class="flex items-start p-4 bg-white bg-opacity-20 rounded-lg backdrop-filter backdrop-blur-sm">
+                <div class="bg-white p-3 rounded-full mr-4">
+                    <i class="fas fa-gift text-pink-600 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-1">Pembungkus Cantik</h3>
+                    <p class="text-pink-100 text-sm">Setiap bunga dikemas dengan apik dan estetik</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Main Content with top padding to account for fixed navbar -->
+    <div class="container mx-auto px-4 py-8 flex-grow" style="padding-top: 80px;">
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Produk Bunga</h2>
         
         <!-- Product Container -->
@@ -111,23 +226,23 @@
         </div>
     </div>
 
-    <!-- Shopping Cart Section -->
+    <!-- Shopping Cart Section with improved mobile responsiveness -->
     <div id="cart-section" class="container mx-auto px-4 mb-10">
-        <div class="bg-white rounded-lg p-6 shadow-md border border-pink-100">
-            <div class="flex justify-between items-center mb-6">
+        <div class="bg-white rounded-lg p-4 md:p-6 shadow-md border border-pink-100">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h2 class="text-xl font-bold text-gray-800">Keranjang Belanja</h2>
-                <div class="space-x-2">
-                    <button id="clear-cart-btn" onclick="clearCart()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded transition-colors duration-300">
+                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <button id="clear-cart-btn" onclick="clearCart()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded transition-colors duration-300 w-full sm:w-auto">
                         <i class="fas fa-trash-alt mr-1"></i> Kosongkan
                     </button>
-                    <button id="checkout-btn" onclick="goToCheckout()" class="bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <button id="checkout-btn" onclick="goToCheckout()" class="bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto" disabled>
                         <i class="fas fa-check mr-1"></i> Checkout
                     </button>
                 </div>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full border-collapse">
+                <table class="w-full border-collapse responsive-table">
                     <thead>
                         <tr class="bg-pink-100">
                             <th class="py-3 px-4 text-left text-gray-700 border-b border-pink-200">Nama Produk</th>
@@ -374,17 +489,17 @@
                 for (const id in cart) {
                     const item = cart[id];
                     
-                    // Main cart item
+                    // Main cart item with responsive data attributes
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td class="py-3 px-4">
+                        <td class="py-3 px-4" data-label="Produk">
                             <div class="flex items-center">
                                 <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded mr-3">
                                 <span>${item.name}</span>
                             </div>
                         </td>
-                        <td class="py-3 px-4">Rp${item.price.toLocaleString()}</td>
-                        <td class="py-3 px-4">
+                        <td class="py-3 px-4" data-label="Harga">Rp${item.price.toLocaleString()}</td>
+                        <td class="py-3 px-4" data-label="Jumlah">
                             <div class="flex items-center">
                                 <button onclick="updateQuantity('${id}', -1)" class="bg-pink-100 hover:bg-pink-200 text-pink-600 w-8 h-8 rounded-l flex items-center justify-center">
                                     <i class="fas fa-minus"></i>
@@ -395,8 +510,8 @@
                                 </button>
                             </div>
                         </td>
-                        <td class="py-3 px-4 text-right">Rp${(item.price * item.qty).toLocaleString()}</td>
-                        <td class="py-3 px-4 text-center">
+                        <td class="py-3 px-4 text-right" data-label="Total">Rp${(item.price * item.qty).toLocaleString()}</td>
+                        <td class="py-3 px-4 text-center no-label">
                             <button onclick="removeItem('${id}')" class="text-red-500 hover:text-red-700">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -404,7 +519,7 @@
                     `;
                     cartItems.appendChild(row);
                     
-                    // Mini cart item (diperbarui untuk lebih mirip dengan full cart)
+                    // Mini cart item
                     const miniItem = document.createElement('div');
                     miniItem.className = 'py-3 flex items-center';
                     miniItem.innerHTML = `
