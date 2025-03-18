@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Toko Sekar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<style>
+    .payment-method.selected {
+        border-color: #ec4899; /* Tailwind's pink-500 */
+    }
+</style>
+
+
+<body class="bg-pink-50 min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-leaf text-pink-500 text-2xl mr-2"></i>
+                    <a href="index.html" class="text-xl font-bold text-pink-600">Toko Sekar</a>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <a href="index.html" class="text-gray-700 hover:text-pink-600 transition-colors duration-300">Beranda</a>
+                    <a href="product.html" class="text-gray-700 hover:text-pink-600 transition-colors duration-300">Produk</a>
+                    <a href="history.html" class="text-gray-700 hover:text-pink-600 transition-colors duration-300">Riwayat</a>
+                    <a href="about.html" class="text-gray-700 hover:text-pink-600 transition-colors duration-300">Tentang Kami</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 flex-grow">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6">Form Pembayaran</h1>
+            
+            <!-- Progress Steps -->
+            <div class="flex items-center justify-center mb-8">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="text-pink-500 font-medium ml-2">Keranjang</div>
+                </div>
+                <div class="h-1 w-16 bg-pink-500 mx-2"></div>
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="text-pink-500 font-medium ml-2">Pembayaran</div>
+                </div>
+                <div class="h-1 w-16 bg-gray-300 mx-2"></div>
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-500 flex items-center justify-center">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="text-gray-500 ml-2">Selesai</div>
+                </div>
+            </div>
+            
+            <!-- Checkout Container -->
+            <div class="bg-white shadow-md rounded-lg overflow-hidden border border-pink-100">
+                <!-- Rincian Pembelian -->
+                <div class="p-6 border-b border-pink-100">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Rincian Pembelian</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-pink-50">
+                                    <th class="py-2 px-4 text-left border-b border-pink-100">Produk</th>
+                                    <th class="py-2 px-4 text-right border-b border-pink-100">Harga</th>
+                                    <th class="py-2 px-4 text-center border-b border-pink-100">Jumlah</th>
+                                    <th class="py-2 px-4 text-right border-b border-pink-100">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cartBody" class="divide-y divide-pink-100">
+                                <!-- Diisi via JS -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="bg-pink-50">
+                                    <td colspan="3" class="py-2 px-4 text-right font-bold">Subtotal:</td>
+                                    <td id="subtotal" class="py-2 px-4 text-right font-bold text-pink-600">Rp0</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="py-2 px-4 text-right">Pengiriman:</td>
+                                    <td id="shipping" class="py-2 px-4 text-right">Rp15.000</td>
+                                </tr>
+                                <tr class="bg-pink-50">
+                                    <td colspan="3" class="py-2 px-4 text-right font-bold">Total Pembayaran:</td>
+                                    <td id="grandTotal" class="py-2 px-4 text-right font-bold text-pink-600">Rp0</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Form Pembayaran -->
+                <div class="p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Informasi Pembeli</h2>
+                    <form id="paymentForm" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 mb-2" for="nama">Nama Lengkap</label>
+                                <input type="text" id="nama" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2" for="email">Email</label>
+                                <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2" for="phone">Nomor Telepon</label>
+                                <input type="tel" id="phone" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2" for="alamat">Alamat Pengiriman</label>
+                                <textarea id="alamat" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-500" rows="3" required></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h3 class="text-lg font-medium text-gray-800 mb-3">Metode Pembayaran</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-pink-500 payment-method" data-method="Transfer Bank">
+                                    <input type="radio" name="metode" id="transfer" value="Transfer Bank" class="hidden" checked>
+                                    <label for="transfer" class="flex flex-col items-center cursor-pointer">
+                                        <i class="fas fa-university text-3xl text-gray-600 mb-2"></i>
+                                        <span class="font-medium">Transfer Bank</span>
+                                    </label>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-pink-500 payment-method" data-method="COD">
+                                    <input type="radio" name="metode" id="cod" value="COD" class="hidden">
+                                    <label for="cod" class="flex flex-col items-center cursor-pointer">
+                                        <i class="fas fa-money-bill-wave text-3xl text-gray-600 mb-2"></i>
+                                        <span class="font-medium">COD</span>
+                                    </label>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-pink-500 payment-method" data-method="QRIS">
+                                    <input type="radio" name="metode" id="qris" value="QRIS" class="hidden">
+                                    <label for="qris" class="flex flex-col items-center cursor-pointer">
+                                        <i class="fas fa-qrcode text-3xl text-gray-600 mb-2"></i>
+                                        <span class="font-medium">QRIS</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Form Pilihan Bank - Muncul saat Transfer Bank dipilih -->
+                        <div id="bankFormContainer" class="mt-6">
+                            <h3 class="text-lg font-medium text-gray-800 mb-3">Pilih Bank</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div class="border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-pink-500 bank-option" data-bank="BCA">
+                                    <input type="radio" name="bank" id="bca" value="BCA" class="hidden" checked>
+                                    <label for="bca" class="flex flex-col items-center cursor-pointer">
+                                        <div class="w-16 h-16 flex items-center justify-center mb-2">
+                                            <img src="img/bank.png" alt="BCA" class="max-w-full max-h-full">
+                                        </div>
+                                        <span class="font-medium">BCA</span>
+                                        <span class="text-sm text-gray-500">1234567890</span>
+                                    </label>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-pink-500 bank-option" data-bank="BNI">
+                                    <input type="radio" name="bank" id="bni" value="BNI" class="hidden">
+                                    <label for="bni" class="flex flex-col items-center cursor-pointer">
+                                        <div class="w-16 h-16 flex items-center justify-center mb-2">
+                                            <img src="https://upload.wikimedia.org/wikipedia/id/5/55/BNI_logo.svg" alt="BNI" class="max-w-full max-h-full">
+                                        </div>
+                                        <span class="font-medium">BNI</span>
+                                        <span class="text-sm text-gray-500">0987654321</span>
+                                    </label>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-pink-500 bank-option" data-bank="BRI">
+                                    <input type="radio" name="bank" id="bri" value="BRI" class="hidden">
+                                    <label for="bri" class="flex flex-col items-center cursor-pointer">
+                                        <div class="w-16 h-16 flex items-center justify-center mb-2">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/BANK_BRI_logo.svg/2560px-BANK_BRI_logo.svg.png" alt="BRI" class="max-w-full max-h-full">
+                                        </div>
+                                        <span class="font-medium">BRI</span>
+                                        <span class="text-sm text-gray-500">8765432109</span>
+                                    </label>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-pink-500 bank-option" data-bank="Mandiri">
+                                    <input type="radio" name="bank" id="mandiri" value="Mandiri" class="hidden">
+                                    <label for="mandiri" class="flex flex-col items-center cursor-pointer">
+                                        <div class="w-16 h-16 flex items-center justify-center mb-2">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/1200px-Bank_Mandiri_logo_2016.svg.png" alt="Mandiri" class="max-w-full max-h-full">
+                                        </div>
+                                        <span class="font-medium">Mandiri</span>
+                                        <span class="text-sm text-gray-500">5432109876</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <label class="block text-gray-700 mb-2" for="norekening">Nomor Rekening Anda</label>
+                                <input type="text" id="norekening" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Masukkan nomor rekening Anda" required>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <label class="block text-gray-700 mb-2" for="nama_rekening">Nama Pemilik Rekening</label>
+                                <input type="text" id="nama_rekening" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Masukkan nama pemilik rekening" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Form QRIS - Muncul saat QRIS dipilih -->
+                        <div id="qrisFormContainer" class="mt-6 hidden">
+                            <h3 class="text-lg font-medium text-gray-800 mb-3">Pembayaran QRIS</h3>
+                            <div class="flex flex-col items-center">
+                                <div class="w-48 h-48 bg-gray-100 flex items-center justify-center mb-4">
+                                    <img src="https://chart.googleapis.com/chart?cht=qr&chl=tokosekar-payment&chs=300x300" alt="QRIS Code" class="max-w-full max-h-full">
+                                </div>
+                                <p class="text-gray-600 text-center mb-4">
+                                    Scan kode QR di atas menggunakan aplikasi mobile banking atau e-wallet Anda
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Form COD - Muncul saat COD dipilih -->
+                        <div id="codFormContainer" class="mt-6 hidden">
+                            <h3 class="text-lg font-medium text-gray-800 mb-3">Cash On Delivery</h3>
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                <div class="flex items-start">
+                                    <i class="fas fa-info-circle text-yellow-500 mr-3 mt-1"></i>
+                                    <div>
+                                        <p class="text-gray-700">Pembayaran dilakukan saat barang diterima.</p>
+                                        <p class="text-gray-700 mt-2">Pastikan alamat pengiriman yang Anda masukkan sudah benar.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mt-8">
+                            <a href="product.html" class="text-pink-600 hover:text-pink-700">
+                                <i class="fas fa-arrow-left mr-1"></i> Kembali Berbelanja
+                            </a>
+                            <button type="submit" id="checkoutBtn" class="bg-pink-500 hover:bg-pink-600 text-white py-3 px-6 rounded-lg font-medium transition-colors duration-300">
+                                Selesaikan Pembayaran
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-pink-100 mt-8 py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="font-semibold text-pink-600 mb-2">Toko Sekar</h3>
+                    <p class="text-gray-600 text-sm">Menyediakan bunga segar berkualitas<br>untuk setiap momen spesial Anda</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-pink-600 mb-2">Hubungi Kami</h3>
+                    <p class="text-gray-600 text-sm">Email: info@tokosekar.com</p>
+                    <p class="text-gray-600 text-sm">Tel: (021) 1234-5678</p>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-pink-100 text-center text-gray-600 text-sm">
+                &copy; 2025 Toko Sekar. Semua hak dilindungi.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mb-4"></div>
+            <p class="text-gray-700">Memproses pembayaran...</p>
+        </div>
+    </div>
+
+    <script>
+        // Get cart from localStorage
+        let cart = JSON.parse(localStorage.getItem("keranjang") || "{}");
+        const shippingCost = 15000;
+        
+        // Format currency to Rupiah
+        function formatRupiah(number) {
+            return "Rp" + number.toLocaleString();
+        }
+        
+        // Calculate subtotal from cart items
+        function calculateSubtotal() {
+            let subtotal = 0;
+            for (let id in cart) {
+                let item = cart[id];
+                subtotal += item.price * item.qty;
+            }
+            return subtotal;
+        }
+        
+        // Render cart items in the table
+        function renderCartDetails() {
+            let tbody = document.getElementById("cartBody");
+            tbody.innerHTML = "";
+            
+            if (Object.keys(cart).length === 0) {
+                let tr = document.createElement("tr");
+                let td = document.createElement("td");
+                td.colSpan = 4;
+                td.className = "py-6 text-center text-gray-500";
+                td.innerText = "Keranjang belanja Anda masih kosong";
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+                
+                document.getElementById("subtotal").innerText = formatRupiah(0);
+                document.getElementById("shipping").innerText = formatRupiah(0);
+                document.getElementById("grandTotal").innerText = formatRupiah(0);
+                
+                // Disable checkout button
+                document.getElementById("checkoutBtn").disabled = true;
+                document.getElementById("checkoutBtn").classList.add("opacity-50", "cursor-not-allowed");
+                return;
+            }
+            
+            for (let id in cart) {
+                let item = cart[id];
+                
+                let tr = document.createElement("tr");
+                
+                let tdName = document.createElement("td");
+                tdName.className = "py-4 px-4";
+                tdName.innerHTML = `
+                    <div class="flex items-center">
+                        <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded mr-3">
+                        <span>${item.name}</span>
+                    </div>
+                `;
+                
+                let tdPrice = document.createElement("td");
+                tdPrice.className = "py-4 px-4 text-right";
+                tdPrice.innerText = formatRupiah(item.price);
+                
+                let tdQty = document.createElement("td");
+                tdQty.className = "py-4 px-4 text-center";
+                tdQty.innerText = item.qty;
+                
+                let tdTotal = document.createElement("td");
+                tdTotal.className = "py-4 px-4 text-right";
+                tdTotal.innerText = formatRupiah(item.price * item.qty);
+                
+                tr.appendChild(tdName);
+                tr.appendChild(tdPrice);
+                tr.appendChild(tdQty);
+                tr.appendChild(tdTotal);
+                
+                tbody.appendChild(tr);
+            }
+            
+            const subtotal = calculateSubtotal();
+            const grandTotal = subtotal + shippingCost;
+            
+            document.getElementById("subtotal").innerText = formatRupiah(subtotal);
+            document.getElementById("shipping").innerText = formatRupiah(shippingCost);
+            document.getElementById("grandTotal").innerText = formatRupiah(grandTotal);
+        }
+        
+        // Handle payment method selection
+        function setupPaymentMethodSelection() {
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', () => {
+                    // Remove active class from all methods
+                    paymentMethods.forEach(m => {
+                        m.classList.remove('border-pink-500', 'bg-pink-50');
+                    });
+                    
+                    // Add active class to selected method
+                    method.classList.add('border-pink-500', 'bg-pink-50');
+                    
+                    // Check the radio button
+                    const radioInput = method.querySelector('input[type="radio"]');
+                    radioInput.checked = true;
+                    
+                    // Show/hide appropriate form based on selected payment method
+                    const selectedMethod = radioInput.value;
+                    togglePaymentForms(selectedMethod);
+                });
+            });
+            
+            // Handle bank selection
+            const bankOptions = document.querySelectorAll('.bank-option');
+            bankOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Remove active class from all bank options
+                    bankOptions.forEach(o => {
+                        o.classList.remove('border-pink-500', 'bg-pink-50');
+                    });
+                    
+                    // Add active class to selected option
+                    option.classList.add('border-pink-500', 'bg-pink-50');
+                    
+                    // Check the radio button
+                    const radioInput = option.querySelector('input[type="radio"]');
+                    radioInput.checked = true;
+                });
+            });
+            
+            // Set initial state (Transfer Bank is checked by default)
+            togglePaymentForms("Transfer Bank");
+        }
+        
+        // Toggle payment forms based on selected method
+        function togglePaymentForms(method) {
+            const bankForm = document.getElementById('bankFormContainer');
+            const qrisForm = document.getElementById('qrisFormContainer');
+            const codForm = document.getElementById('codFormContainer');
+            
+            // Hide all forms first
+            bankForm.classList.add('hidden');
+            qrisForm.classList.add('hidden');
+            codForm.classList.add('hidden');
+            
+            // Disable required fields in all forms
+            document.getElementById('norekening').required = false;
+            document.getElementById('nama_rekening').required = false;
+            
+            // Show only the selected form
+            switch(method) {
+                case 'Transfer Bank':
+                    bankForm.classList.remove('hidden');
+                    document.getElementById('norekening').required = true;
+                    document.getElementById('nama_rekening').required = true;
+                    break;
+                case 'QRIS':
+                    qrisForm.classList.remove('hidden');
+                    break;
+                case 'COD':
+                    codForm.classList.remove('hidden');
+                    break;
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById("paymentForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            // Check if cart is empty
+            if (Object.keys(cart).length === 0) {
+                alert("Keranjang belanja Anda masih kosong. Tidak bisa melanjutkan pembayaran.");
+                return;
+            }
+            
+            // Show loading overlay
+            document.getElementById("loadingOverlay").classList.remove("hidden");
+            document.getElementById("loadingOverlay").classList.add("flex");
+            
+            // Get form values
+            let nama = document.getElementById("nama").value;
+            let email = document.getElementById("email").value;
+            let phone = document.getElementById("phone").value;
+            let alamat = document.getElementById("alamat").value;
+            
+            // Get selected payment method
+            let metode = document.querySelector('input[name="metode"]:checked').value;
+            
+            // Get additional payment details based on method
+            let paymentDetails = {};
+            if (metode === "Transfer Bank") {
+                const selectedBank = document.querySelector('input[name="bank"]:checked').value;
+                const noRekening = document.getElementById("norekening").value;
+                const namaRekening = document.getElementById("nama_rekening").value;
+                
+                metode = `Transfer Bank (${selectedBank})`;
+                paymentDetails = {
+                    bank: selectedBank,
+                    noRekening: noRekening,
+                    namaRekening: namaRekening
+                };
+            }
+            
+            // Calculate totals
+            let subtotal = calculateSubtotal();
+            let total = subtotal + shippingCost;
+            let tanggal = new Date().toLocaleString('id-ID', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Create transaction object
+            let transaksi = {
+                orderId: 'ORD' + Date.now().toString().slice(-6),
+                nama: nama,
+                email: email,
+                phone: phone,
+                alamat: alamat,
+                metode: metode,
+                paymentDetails: paymentDetails,
+                subtotal: subtotal,
+                shipping: shippingCost,
+                total: total,
+                tanggal: tanggal,
+                status: "Menunggu Pembayaran",
+                items: cart
+            };
+            
+            // Save to localStorage as history
+            let history = JSON.parse(localStorage.getItem("historyPembayaran") || "[]");
+            history.push(transaksi);
+            localStorage.setItem("historyPembayaran", JSON.stringify(history));
+            
+            // Also save in the format needed for success.html
+            let order = {
+                id: transaksi.orderId,
+                date: tanggal,
+                customer: {
+                    name: nama,
+                    email: email,
+                    phone: phone,
+                    address: alamat
+                },
+                payment: {
+                    method: metode,
+                    subtotal: subtotal,
+                    shipping: shippingCost,
+                    total: total,
+                    details: paymentDetails
+                },
+                status: "Menunggu Pembayaran",
+                items: Object.values(cart).map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.qty,
+                    image: item.image
+                }))
+            };
+            
+            // Save orders for success.html
+            let orders = JSON.parse(localStorage.getItem("orders") || "[]");
+            orders.push(order);
+            localStorage.setItem("orders", JSON.stringify(orders));
+            
+            // Clear cart
+            localStorage.removeItem("keranjang");
+            
+            // Simulate processing time
+            setTimeout(() => {
+                // Hide loading overlay
+                document.getElementById("loadingOverlay").classList.add("hidden");
+                document.getElementById("loadingOverlay").classList.remove("flex");
+                
+                // Redirect to success page
+                window.location.href = `success.html?orderId=${transaksi.orderId}`;
+            }, 1500);
+        });
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCartDetails();
+            setupPaymentMethodSelection();
+            
+            // Redirect if cart is empty
+            if (Object.keys(cart).length === 0) {
+                setTimeout(() => {
+                    alert("Keranjang belanja Anda masih kosong. Silakan pilih produk terlebih dahulu.");
+                    window.location.href = "product.html";
+                }, 500);
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+        const methods = document.querySelectorAll('.payment-method');
+
+        function updateSelection() {
+            methods.forEach(div => div.classList.remove('selected'));
+            const selected = document.querySelector('input[name="metode"]:checked');
+            if (selected) {
+                selected.closest('.payment-method').classList.add('selected');
+            }
+        }
+
+        // Saat halaman dimuat
+        updateSelection();
+
+        // Saat user pilih metode lain
+        methods.forEach(div => {
+            div.addEventListener('click', () => {
+                div.querySelector('input[type="radio"]').checked = true;
+                updateSelection();
+            });
+        });
+    });
+    </script>
+    
+</body>
+</html>

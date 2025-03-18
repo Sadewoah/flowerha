@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pesanan Berhasil</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-green-50 flex items-center justify-center min-h-screen font-sans">
+    <div class="bg-white p-8 rounded-2xl shadow-lg text-center max-w-md w-full">
+        <svg class="mx-auto mb-4 w-16 h-16 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10z" />
+        </svg>
+        <h1 class="text-2xl font-bold text-green-600 mb-2">Pesanan Berhasil!</h1>
+        <p class="text-gray-700 mb-4">Terima kasih telah memesan. Pesanan Anda sedang diproses.</p>
+        <p class="text-sm text-gray-500 mb-4">ID Pesanan: <span id="orderId" class="font-medium text-black"></span></p>
+
+        <div id="orderDetails" class="text-left text-sm text-gray-700 mt-4 hidden">
+            <p><strong>Nama:</strong> <span id="custName"></span></p>
+            <p><strong>Alamat:</strong> <span id="custAddress"></span></p>
+            <p><strong>Metode Pembayaran:</strong> <span id="payMethod"></span></p>
+            <p><strong>Subtotal:</strong> Rp<span id="subtotal"></span></p>
+            <p><strong>Ongkir:</strong> Rp<span id="shipping"></span></p>
+            <p><strong>Total:</strong> Rp<span id="total"></span></p>
+            <div class="mt-2">
+                <strong>Barang:</strong>
+                <ul id="itemsList" class="list-disc list-inside text-gray-600"></ul>
+            </div>
+        </div>
+
+        <a href="index.html" class="inline-block mt-6 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition">Kembali ke Beranda</a>
+    </div>
+
+    <script>
+        // Ambil orderId dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('orderId');
+        document.getElementById('orderId').textContent = orderId || "Tidak Ditemukan";
+
+        if (orderId) {
+            // Ambil semua orders dari localStorage
+            const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+            // Cari order dengan ID sesuai
+            const order = orders.find(o => o.id === orderId);
+
+            if (order) {
+                // Tampilkan detail pesanan
+                document.getElementById('custName').textContent = order.customer.name;
+                document.getElementById('custAddress').textContent = order.customer.address;
+                document.getElementById('payMethod').textContent = order.payment.method;
+                document.getElementById('subtotal').textContent = order.payment.subtotal.toLocaleString();
+                document.getElementById('shipping').textContent = order.payment.shipping.toLocaleString();
+                document.getElementById('total').textContent = order.payment.total.toLocaleString();
+
+                // Tampilkan daftar barang
+                const itemsList = document.getElementById('itemsList');
+                order.items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = `${item.name} x${item.quantity}`;
+                    itemsList.appendChild(li);
+                });
+
+                document.getElementById('orderDetails').classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

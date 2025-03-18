@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toko Sekar | Produk Bunga Cantik No. 1 di Bali</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .pagination-btn {
+            transition: all 0.3s ease;
+        }
+        .pagination-btn.active {
+            background-color: #ec4899;
+            color: white;
+        }
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 0.7rem;
+            padding: 2px 5px;
+            border-radius: 50%;
+            background-color: #ec4899;
+            color: white;
+        }
+        .toast {
+            transition: all 0.3s ease;
+            transform: translateY(100px);
+            opacity: 0;
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-pink-50 min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-leaf text-pink-500 text-2xl mr-2"></i>
+                    <a href="index.html" class="text-xl font-bold text-pink-600">Toko Sekar</a>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <a href="index.html" class="text-pink-600 border-b-2 border-pink-500 font-medium">Produk</a>
+                    <a href="history.html" class="text-gray-700 hover:text-pink-600 transition-colors duration-300">Riwayat</a>
+                    
+                    <div class="relative cursor-pointer" id="cart-icon" onclick="toggleCart()">
+                        <i class="fas fa-shopping-cart text-gray-700 hover:text-pink-600 text-xl transition-colors duration-300"></i>
+                        <span id="cart-count" class="cart-badge">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Mini Cart Dropdown -->
+    <div id="mini-cart" class="hidden absolute right-4 mt-2 z-50 bg-white rounded-lg shadow-lg w-80 border border-pink-100" style="top: 60px; right: 20px;">
+        <div class="p-4">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-bold text-gray-800">Keranjang Belanja</h3>
+                <button onclick="toggleCart()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="mini-cart-items" class="max-h-64 overflow-y-auto divide-y divide-pink-100">
+                <!-- Cart items will be displayed here -->
+            </div>
+            
+            <div id="empty-cart-message" class="py-3 text-gray-500 text-center hidden">
+                Keranjang belanja kosong
+            </div>
+            
+            <div class="mt-3 pt-3 border-t border-pink-100">
+                <div class="flex justify-between font-bold text-gray-800 mb-3">
+                    <span>Total:</span>
+                    <span id="mini-cart-total">Rp0</span>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="clearCart()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-3 rounded text-sm transition-colors duration-300">
+                        Kosongkan
+                    </button>
+                    <button id="mini-checkout-btn" onclick="goToCheckout()" class="flex-1 bg-pink-500 hover:bg-pink-600 text-white py-2 px-3 rounded text-sm transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 flex-grow">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Produk Bunga</h2>
+        
+        <!-- Product Container -->
+        <div id="product-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Produk akan dimuat oleh JavaScript -->
+        </div>
+        
+        <!-- Pagination -->
+        <div class="mt-8 flex justify-center">
+            <div class="flex space-x-2">
+                <button id="page-1" class="pagination-btn active px-4 py-2 rounded-md border border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white">1</button>
+                <button id="page-2" class="pagination-btn px-4 py-2 rounded-md border border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white">2</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Section -->
+    <div id="cart-section" class="container mx-auto px-4 mb-10">
+        <div class="bg-white rounded-lg p-6 shadow-md border border-pink-100">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-800">Keranjang Belanja</h2>
+                <div class="space-x-2">
+                    <button id="clear-cart-btn" onclick="clearCart()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded transition-colors duration-300">
+                        <i class="fas fa-trash-alt mr-1"></i> Kosongkan
+                    </button>
+                    <button id="checkout-btn" onclick="goToCheckout()" class="bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fas fa-check mr-1"></i> Checkout
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-pink-100">
+                            <th class="py-3 px-4 text-left text-gray-700 border-b border-pink-200">Nama Produk</th>
+                            <th class="py-3 px-4 text-left text-gray-700 border-b border-pink-200">Harga</th>
+                            <th class="py-3 px-4 text-left text-gray-700 border-b border-pink-200">Jumlah</th>
+                            <th class="py-3 px-4 text-right text-gray-700 border-b border-pink-200">Total</th>
+                            <th class="py-3 px-4 text-center text-gray-700 border-b border-pink-200">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cart-items" class="divide-y divide-pink-100">
+                        <!-- Cart items will be displayed here -->
+                    </tbody>
+                    <tfoot id="cart-footer" class="hidden">
+                        <tr class="bg-pink-50">
+                            <td colspan="3" class="py-3 px-4 text-right font-bold text-gray-800">Total:</td>
+                            <td id="cart-total" class="py-3 px-4 text-right font-bold text-pink-600">Rp0</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <div id="empty-cart" class="py-8 text-center text-gray-500">
+                    <i class="fas fa-shopping-cart text-pink-200 text-5xl mb-3"></i>
+                    <p>Keranjang belanja Anda masih kosong</p>
+                    <p class="mt-2 text-sm">Tambahkan beberapa produk ke keranjang untuk mulai berbelanja</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-pink-100 mt-auto py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="font-semibold text-pink-600 mb-2">Toko Sekar</h3>
+                    <p class="text-gray-600 text-sm">Menyediakan bunga segar berkualitas<br>untuk setiap momen spesial Anda</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-pink-600 mb-2">Hubungi Kami</h3>
+                    <p class="text-gray-600 text-sm">Email: info@bungacantik.com</p>
+                    <p class="text-gray-600 text-sm">Tel: (021) 1234-5678</p>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-pink-100 text-center text-gray-600 text-sm">
+                &copy; @2025 Toko Sekar. Semua hak dilindungi.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toast-message">Item ditambahkan ke keranjang!</span>
+        </div>
+    </div>
+
+    <script>
+        // Daftar bunga diurutkan dari yang populer berdasarkan gambar
+        const products = [
+            { id: 'p001', name: 'Mawar', price: 15000, image: 'img/Mawar.JPG', description: 'Mawar merah segar untuk mempercantik rumah atau hadiah spesial', popularity: 10 },
+            { id: 'p002', name: 'Tulip', price: 20000, image: 'img/Tulip.JPG', description: 'Tulip cantik berbagai warna, cocok untuk kado spesial', popularity: 9 },
+            { id: 'p003', name: 'Hydrangea', price: 28000, image: 'img/Hydrangeas.JPG', description: 'Hydrangea berwarna biru cantik untuk dekorasi outdoor', popularity: 8 },
+            { id: 'p004', name: 'Daisy', price: 10000, image: 'img/Daisy.JPG', description: 'Daisy putih segar untuk mempercantik ruangan Anda', popularity: 7 },
+            { id: 'p005', name: 'Lily', price: 18000, image: 'img/Lily.JPG', description: 'Lily putih dengan aroma harum untuk acara spesial', popularity: 7 },
+            { id: 'p006', name: 'Lavender', price: 14000, image: 'img/Lavender.JPG', description: 'Lavender segar untuk dekorasi dan aromaterapi', popularity: 6 },
+            { id: 'p007', name: 'Peony', price: 22000, image: 'img/Peony.JPG', description: 'Peony mewah untuk acara formal atau hadiah istimewa', popularity: 6 },
+            { id: 'p008', name: 'Orchid', price: 25000, image: 'img/Orcid.JPG', description: 'Orchid elegan untuk dekorasi ruang tamu atau kantor', popularity: 5 },
+            { id: 'p009', name: 'Dandelion', price: 8000, image: 'img/Dandelions.JPG', description: 'Dandelion cantik untuk dekorasi natural', popularity: 4 },
+            { id: 'p010', name: 'Poppy', price: 12000, image: 'img/Poppy.JPG', description: 'Bunga Poppy merah yang eye-catching untuk dekorasi', popularity: 4 },
+            { id: 'p011', name: 'Baby Breath', price: 35000, image: 'img/baby_breath.JPG', description: 'Kelembutan baby breath, pilihan tepat untuk dekorasi yang menenangkan.', popularity: 8 },
+            { id: 'p012', name: 'Aster', price: 8000, image: 'img/aster.JPG', description: 'Percikan warna dari bunga Aster, hadirkan suasana ceria yang menenangkan.', popularity: 3 }
+        ];
+
+        // Display products based on page number
+        function displayProducts(page) {
+            const productsPerPage = 6;
+            const startIndex = (page - 1) * productsPerPage;
+            const endIndex = startIndex + productsPerPage;
+            const currentProducts = products.slice(startIndex, endIndex);
+            
+            const productContainer = document.getElementById('product-container');
+            productContainer.innerHTML = '';
+            
+            currentProducts.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 border border-pink-100';
+                productCard.innerHTML = `
+                    <div class="h-48 bg-white flex items-center justify-center p-4">
+                        <img src="${product.image}" alt="${product.name}" class="h-full object-contain">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-gray-800 text-lg">${product.name}</h3>
+                        <p class="text-pink-600 font-bold mt-1">Rp${product.price.toLocaleString()}</p>
+                        <p class="text-gray-600 text-sm mt-2">${product.description}</p>
+                        <button onclick="addToCart('${product.id}')" class="mt-4 w-full bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded transition-colors duration-300 flex items-center justify-center">
+                            <i class="fas fa-cart-plus mr-2"></i> Tambah ke Keranjang
+                        </button>
+                    </div>
+                `;
+                productContainer.appendChild(productCard);
+            });
+
+            // Update pagination buttons
+            document.querySelectorAll('.pagination-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`page-${page}`).classList.add('active');
+        }
+
+        // Get cart from localStorage or initialize empty
+        function getCart() {
+            try {
+                return JSON.parse(localStorage.getItem('keranjang')) || {};
+            } catch (error) {
+                console.error("Error parsing cart data:", error);
+                return {};
+            }
+        }
+
+        // Save cart to localStorage
+        function saveCart(cart) {
+            localStorage.setItem('keranjang', JSON.stringify(cart));
+        }
+
+        // Add product to cart
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+
+            let cart = getCart();
+            
+            if (cart[id]) {
+                cart[id].qty += 1;
+            } else {
+                cart[id] = { 
+                    name: product.name, 
+                    price: product.price, 
+                    qty: 1,
+                    image: product.image
+                };
+            }
+            
+            saveCart(cart);
+            updateCartDisplay();
+            
+            // Show toast
+            showToast(`${product.name} telah ditambahkan ke keranjang!`);
+        }
+
+        // Update item quantity in cart
+        function updateQuantity(id, change) {
+            let cart = getCart();
+            
+            if (!cart[id]) return;
+            
+            cart[id].qty += change;
+            
+            if (cart[id].qty <= 0) {
+                delete cart[id];
+            }
+            
+            saveCart(cart);
+            updateCartDisplay();
+        }
+
+        // Remove item from cart
+        function removeItem(id) {
+            let cart = getCart();
+            
+            if (cart[id]) {
+                delete cart[id];
+                saveCart(cart);
+                updateCartDisplay();
+                showToast("Item telah dihapus dari keranjang");
+            }
+        }
+
+        // Clear all items from cart
+        function clearCart() {
+            localStorage.removeItem('keranjang');
+            updateCartDisplay();
+            showToast("Keranjang telah dikosongkan");
+        }
+
+        // Calculate total price of items in cart
+        function calculateTotal(cart) {
+            let total = 0;
+            for (const id in cart) {
+                total += cart[id].price * cart[id].qty;
+            }
+            return total;
+        }
+
+        // Update all cart displays
+        function updateCartDisplay() {
+            const cart = getCart();
+            const cartItems = document.getElementById('cart-items');
+            const miniCartItems = document.getElementById('mini-cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const emptyCart = document.getElementById('empty-cart');
+            const cartFooter = document.getElementById('cart-footer');
+            const cartTotal = document.getElementById('cart-total');
+            const miniCartTotal = document.getElementById('mini-cart-total');
+            const checkoutBtn = document.getElementById('checkout-btn');
+            const miniCheckoutBtn = document.getElementById('mini-checkout-btn');
+            const emptyCartMessage = document.getElementById('empty-cart-message');
+            
+            // Count total items
+            let totalItems = 0;
+            for (const id in cart) {
+                totalItems += cart[id].qty;
+            }
+            
+            // Update cart count badge
+            cartCount.textContent = totalItems;
+            
+            // Calculate total
+            const total = calculateTotal(cart);
+            
+            // Clear previous items
+            cartItems.innerHTML = '';
+            miniCartItems.innerHTML = '';
+            
+            if (totalItems === 0) {
+                // Show empty cart message
+                emptyCart.classList.remove('hidden');
+                cartFooter.classList.add('hidden');
+                emptyCartMessage.classList.remove('hidden');
+                
+                // Disable checkout buttons
+                checkoutBtn.disabled = true;
+                miniCheckoutBtn.disabled = true;
+            } else {
+                // Hide empty cart message
+                emptyCart.classList.add('hidden');
+                cartFooter.classList.remove('hidden');
+                emptyCartMessage.classList.add('hidden');
+                
+                // Enable checkout buttons
+                checkoutBtn.disabled = false;
+                miniCheckoutBtn.disabled = false;
+                
+                // Populate cart items
+                for (const id in cart) {
+                    const item = cart[id];
+                    
+                    // Main cart item
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="py-3 px-4">
+                            <div class="flex items-center">
+                                <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded mr-3">
+                                <span>${item.name}</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4">Rp${item.price.toLocaleString()}</td>
+                        <td class="py-3 px-4">
+                            <div class="flex items-center">
+                                <button onclick="updateQuantity('${id}', -1)" class="bg-pink-100 hover:bg-pink-200 text-pink-600 w-8 h-8 rounded-l flex items-center justify-center">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="bg-white border-t border-b border-pink-100 w-10 h-8 flex items-center justify-center">${item.qty}</span>
+                                <button onclick="updateQuantity('${id}', 1)" class="bg-pink-100 hover:bg-pink-200 text-pink-600 w-8 h-8 rounded-r flex items-center justify-center">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 text-right">Rp${(item.price * item.qty).toLocaleString()}</td>
+                        <td class="py-3 px-4 text-center">
+                            <button onclick="removeItem('${id}')" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    cartItems.appendChild(row);
+                    
+                    // Mini cart item (diperbarui untuk lebih mirip dengan full cart)
+                    const miniItem = document.createElement('div');
+                    miniItem.className = 'py-3 flex items-center';
+                    miniItem.innerHTML = `
+                        <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded mr-3">
+                        <div class="flex-1">
+                            <div class="text-sm font-medium text-gray-800">${item.name}</div>
+                            <div class="text-xs text-gray-500 mt-1">Rp${item.price.toLocaleString()}</div>
+                            <div class="flex items-center mt-1">
+                                <button onclick="updateQuantity('${id}', -1)" class="bg-pink-100 hover:bg-pink-200 text-pink-600 w-6 h-6 rounded-l flex items-center justify-center text-xs">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="bg-white border-t border-b border-pink-100 w-8 h-6 flex items-center justify-center text-xs">${item.qty}</span>
+                                <button onclick="updateQuantity('${id}', 1)" class="bg-pink-100 hover:bg-pink-200 text-pink-600 w-6 h-6 rounded-r flex items-center justify-center text-xs">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <span class="ml-2 text-xs font-medium">Rp${(item.price * item.qty).toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <button onclick="removeItem('${id}')" class="text-gray-400 hover:text-red-500 ml-2">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `;
+                    miniCartItems.appendChild(miniItem);
+                }
+            }
+            
+            // Update totals
+            cartTotal.textContent = `Rp${total.toLocaleString()}`;
+            miniCartTotal.textContent = `Rp${total.toLocaleString()}`;
+        }
+
+        // Toggle mini cart visibility
+        function toggleCart() {
+            const miniCart = document.getElementById('mini-cart');
+            miniCart.classList.toggle('hidden');
+        }
+
+        // Go to checkout page
+        function goToCheckout() {
+            // Check if cart has items
+            const cart = getCart();
+            if (Object.keys(cart).length === 0) {
+                showToast("Keranjang belanja masih kosong");
+                return;
+            }
+            
+            // Redirect to checkout page
+            window.location.href = 'checkout.html';
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close mini cart when clicking outside
+        document.addEventListener('click', function(event) {
+            const miniCart = document.getElementById('mini-cart');
+            const cartIcon = document.getElementById('cart-icon');
+            
+            if (!miniCart.contains(event.target) && !cartIcon.contains(event.target) && !miniCart.classList.contains('hidden')) {
+                miniCart.classList.add('hidden');
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Display first page of products
+            displayProducts(1);
+            
+            // Update cart display
+            updateCartDisplay();
+            
+            // Add event listeners for pagination
+            document.getElementById('page-1').addEventListener('click', function() {
+                displayProducts(1);
+            });
+            
+            document.getElementById('page-2').addEventListener('click', function() {
+                displayProducts(2);
+            });
+        });
+    </script>
+</body>
+</html>
