@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body class="bg-pink-50 min-h-screen flex flex-col">
-    <!-- Navbar -->
-    <nav class="bg-white shadow-md sticky top-0 z-50">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-md fixed top-0 w-full z-50">
         <div class="container mx-auto px-4 py-3">
             <div class="flex justify-between items-center">
                 <div class="flex items-center">
@@ -18,19 +18,22 @@
                 </div>
                 
                 <div class="flex items-center space-x-6">
-                    <a href="index.html" class="text-gray-700 hover:text-pink-600 transition-colors duration-300">Beranda</a>
-                    <a href="product.html" class="text-gray-700 hover:text-pink-600 transition-colors duration-300">Produk</a>
-                    <a href="history.html" class="text-pink-600 font-medium">Riwayat</a>
-                    <a href="" class="text-gray-700 hover:text-pink-600 transition-colors duration-300">Tentang Kami</a>
+                    <a href="index.html" class="text-gray-700 hover:text-pink-600 transition-colors duration-300">Produk</a>
+                    <a href="history.html" class="text-pink-600 border-b-2 border-pink-500 font-medium">Riwayat</a>
+                    
+                    <div class="relative cursor-pointer" id="cart-icon" onclick="toggleCart()">
+                        <i class="fas fa-shopping-cart text-gray-700 hover:text-pink-600 text-xl transition-colors duration-300"></i>
+                        <span id="cart-count" class="cart-badge">0</span>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="container mx-auto px-4 py-8 flex-grow">
+    <div class="container mt-14 mx-auto px-4 py-8 flex-grow">
         <div class="max-w-4xl mx-auto">
-            <div class="flex justify-between items-center mb-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                 <h1 class="text-2xl font-bold text-gray-800">Riwayat Pembayaran</h1>
                 <a href="index.html" class="bg-white hover:bg-pink-50 text-pink-600 py-2 px-4 rounded-lg border border-pink-200 transition-colors duration-300 flex items-center">
                     <i class="fas fa-arrow-left mr-2"></i> Kembali Berbelanja
@@ -38,7 +41,8 @@
             </div>
             
             <div class="bg-white shadow-md rounded-lg overflow-hidden border border-pink-100">
-                <div class="overflow-x-auto">
+                <!-- Table for larger screens -->
+                <div class="hidden md:block overflow-x-auto">
                     <table class="w-full">
                         <thead>
                             <tr class="bg-pink-50">
@@ -49,10 +53,15 @@
                                 <th class="py-3 px-4 text-left border-b border-pink-100">Tanggal</th>
                             </tr>
                         </thead>
-                        <tbody id="historyBody" class="divide-y divide-pink-100">
-                            <!-- Data history tampil di sini -->
+                        <tbody id="historyTableBody" class="divide-y divide-pink-100">
+                            <!-- Data history tampil di sini untuk layar besar -->
                         </tbody>
                     </table>
+                </div>
+                
+                <!-- Card-based layout for mobile -->
+                <div id="historyMobileCards" class="md:hidden divide-y divide-pink-100">
+                    <!-- Mobile cards will be inserted here -->
                 </div>
                 
                 <!-- Empty State -->
@@ -96,12 +105,14 @@
         
         // Get history data from localStorage
         let history = JSON.parse(localStorage.getItem("historyPembayaran") || "[]");
-        let historyBody = document.getElementById("historyBody");
+        let historyTableBody = document.getElementById("historyTableBody");
+        let historyMobileCards = document.getElementById("historyMobileCards");
         let emptyState = document.getElementById("emptyState");
         
         if (history.length === 0) {
             // Show empty state
-            historyBody.parentElement.parentElement.classList.add("hidden");
+            document.querySelector(".hidden.md\\:block").classList.add("hidden");
+            historyMobileCards.classList.add("hidden");
             emptyState.classList.remove("hidden");
         } else {
             // Sort history with newest first
@@ -118,7 +129,9 @@
                 return dateB - dateA;
             });
             
+            // Populate desktop table
             history.forEach(transaksi => {
+                // Create table row for desktop
                 let tr = document.createElement("tr");
                 tr.className = "hover:bg-pink-50";
                 
@@ -147,9 +160,85 @@
                 tanggalTd.textContent = transaksi.tanggal;
                 tr.appendChild(tanggalTd);
                 
- 
+                historyTableBody.appendChild(tr);
                 
-                historyBody.appendChild(tr);
+                // Create card for mobile view
+                let card = document.createElement("div");
+                card.className = "p-4 flex flex-col gap-2";
+                
+                let orderSection = document.createElement("div");
+                orderSection.className = "flex justify-between items-center";
+                
+                let orderLabel = document.createElement("div");
+                orderLabel.className = "text-gray-500 text-sm";
+                orderLabel.textContent = "Order ID";
+                
+                let orderId = document.createElement("div");
+                orderId.className = "font-medium";
+                orderId.textContent = transaksi.orderId || "-";
+                
+                orderSection.appendChild(orderLabel);
+                orderSection.appendChild(orderId);
+                card.appendChild(orderSection);
+                
+                let namaSection = document.createElement("div");
+                namaSection.className = "flex justify-between items-center";
+                
+                let namaLabel = document.createElement("div");
+                namaLabel.className = "text-gray-500 text-sm";
+                namaLabel.textContent = "Nama";
+                
+                let nama = document.createElement("div");
+                nama.textContent = transaksi.nama;
+                
+                namaSection.appendChild(namaLabel);
+                namaSection.appendChild(nama);
+                card.appendChild(namaSection);
+                
+                let metodeSection = document.createElement("div");
+                metodeSection.className = "flex justify-between items-center";
+                
+                let metodeLabel = document.createElement("div");
+                metodeLabel.className = "text-gray-500 text-sm";
+                metodeLabel.textContent = "Metode Pembayaran";
+                
+                let metode = document.createElement("div");
+                metode.textContent = transaksi.metode;
+                
+                metodeSection.appendChild(metodeLabel);
+                metodeSection.appendChild(metode);
+                card.appendChild(metodeSection);
+                
+                let totalSection = document.createElement("div");
+                totalSection.className = "flex justify-between items-center";
+                
+                let totalLabel = document.createElement("div");
+                totalLabel.className = "text-gray-500 text-sm";
+                totalLabel.textContent = "Total";
+                
+                let total = document.createElement("div");
+                total.className = "font-medium text-pink-600";
+                total.textContent = formatRupiah(transaksi.total);
+                
+                totalSection.appendChild(totalLabel);
+                totalSection.appendChild(total);
+                card.appendChild(totalSection);
+                
+                let tanggalSection = document.createElement("div");
+                tanggalSection.className = "flex justify-between items-center";
+                
+                let tanggalLabel = document.createElement("div");
+                tanggalLabel.className = "text-gray-500 text-sm";
+                tanggalLabel.textContent = "Tanggal";
+                
+                let tanggal = document.createElement("div");
+                tanggal.textContent = transaksi.tanggal;
+                
+                tanggalSection.appendChild(tanggalLabel);
+                tanggalSection.appendChild(tanggal);
+                card.appendChild(tanggalSection);
+                
+                historyMobileCards.appendChild(card);
             });
         }
     </script>
