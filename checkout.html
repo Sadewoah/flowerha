@@ -10,14 +10,48 @@
 
 <style>
     .payment-method.selected {
-        border-color: #ec4899; /* Tailwind's pink-500 */
+        border-color: #ec4899; 
+    }
+
+    /* Custom styles for mobile responsiveness */
+    @media (max-width: 640px) {
+        .mobile-table-card {
+            box-shadow: none;
+            border: none;
+        }
+        
+        .mobile-table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #fbcfe8;
+        }
+        
+        .mobile-table-row:last-child {
+            border-bottom: none;
+        }
+        
+        .mobile-table-label {
+            font-weight: 500;
+            color: #4b5563;
+        }
+        
+        .progress-step {
+            flex-shrink: 0;
+        }
+        
+        .progress-line {
+            flex-grow: 1;
+            min-width: 10px;
+            max-width: 30px;
+        }
     }
 </style>
 
 
 <body class="bg-pink-50 min-h-screen flex flex-col">
-    <!-- Navbar -->
-    <nav class="bg-white shadow-md sticky top-0 z-50">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-md fixed top-0 w-full z-50">
         <div class="container mx-auto px-4 py-3">
             <div class="flex justify-between items-center">
                 <div class="flex items-center">
@@ -26,17 +60,20 @@
                 </div>
                 
                 <div class="flex items-center space-x-6">
-                    <a href="index.html" class="text-gray-700 hover:text-pink-600 transition-colors duration-300">Beranda</a>
-                    <a href="product.html" class="text-gray-700 hover:text-pink-600 transition-colors duration-300">Produk</a>
+                    <a href="index.html" class="text-gray-700 hover:text-pink-600 transition-colors duration-300">Produk</a>
                     <a href="history.html" class="text-gray-700 hover:text-pink-600 transition-colors duration-300">Riwayat</a>
-                    <a href="about.html" class="text-gray-700 hover:text-pink-600 transition-colors duration-300">Tentang Kami</a>
+                    
+                    <div class="relative cursor-pointer" id="cart-icon" onclick="toggleCart()">
+                        <i class="fas fa-shopping-cart text-gray-700 hover:text-pink-600 text-xl transition-colors duration-300"></i>
+                        <span id="cart-count" class="cart-badge">0</span>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="container mx-auto px-4 py-8 flex-grow">
+    <div class="container mt-14 mx-auto px-4 py-8 flex-grow">
         <div class="max-w-4xl mx-auto">
             <h1 class="text-2xl font-bold text-gray-800 mb-6">Form Pembayaran</h1>
             
@@ -46,28 +83,29 @@
                     <div class="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center">
                         <i class="fas fa-shopping-cart"></i>
                     </div>
-                    <div class="text-pink-500 font-medium ml-2">Keranjang</div>
+                    <div class="text-pink-500 font-medium text-sm ml-2">Keranjang</div>
                 </div>
                 <div class="h-1 w-16 bg-pink-500 mx-2"></div>
                 <div class="flex items-center">
                     <div class="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center">
                         <i class="fas fa-credit-card"></i>
                     </div>
-                    <div class="text-pink-500 font-medium ml-2">Pembayaran</div>
+                    <div class="text-pink-500 font-medium text-sm ml-2">Pembayaran</div>
                 </div>
                 <div class="h-1 w-16 bg-gray-300 mx-2"></div>
                 <div class="flex items-center">
                     <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-500 flex items-center justify-center">
                         <i class="fas fa-check"></i>
                     </div>
-                    <div class="text-gray-500 ml-2">Selesai</div>
+                    <div class="text-gray-500 text-sm ml-2">Selesai</div>
                 </div>
             </div>
             
             <!-- Checkout Container -->
             <div class="bg-white shadow-md rounded-lg overflow-hidden border border-pink-100">
                 <!-- Rincian Pembelian -->
-                <div class="p-6 border-b border-pink-100">
+                <div class="p-4  sm:p-6 border-pink-100">
+
                     <h2 class="text-xl font-semibold text-gray-800 mb-4">Rincian Pembelian</h2>
                     <div class="overflow-x-auto">
                         <table class="w-full">
@@ -82,18 +120,17 @@
                             <tbody id="cartBody" class="divide-y divide-pink-100">
                                 <!-- Diisi via JS -->
                             </tbody>
-                            <tfoot>
                                 <tr class="bg-pink-50">
                                     <td colspan="3" class="py-2 px-4 text-right font-bold">Subtotal:</td>
-                                    <td id="subtotal" class="py-2 px-4 text-right font-bold text-pink-600">Rp0</td>
+                                    <td id="subtotalDesktop" class="py-2 px-4 text-right font-bold text-pink-600">Rp0</td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="py-2 px-4 text-right">Pengiriman:</td>
-                                    <td id="shipping" class="py-2 px-4 text-right">Rp15.000</td>
+                                    <td id="shippingDesktop" class="py-2 px-4 text-right">Rp15.000</td>
                                 </tr>
                                 <tr class="bg-pink-50">
                                     <td colspan="3" class="py-2 px-4 text-right font-bold">Total Pembayaran:</td>
-                                    <td id="grandTotal" class="py-2 px-4 text-right font-bold text-pink-600">Rp0</td>
+                                    <td id="grandTotalDesktop" class="py-2 px-4 text-right font-bold text-pink-600">Rp0</td>
                                 </tr>
                             </tfoot>
                         </table>
